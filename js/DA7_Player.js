@@ -9,6 +9,8 @@ function newPlayer(game, xcoord, ycoord)
 	this.sprite.body.collideWorldBounds = true;
 	this.sprite.body.maxVelocity.setTo(this.MAX_SPEED, 0); // x, y
 	this.sprite.body.drag.setTo(this.DRAG, 0); // x, y
+	this.inAir = false;
+    this.JUMP_SPEED = -175; // pixels/second (negative y is up)
 	
 	this.idle = function()
 	{
@@ -23,6 +25,24 @@ function newPlayer(game, xcoord, ycoord)
 	this.moveLeft = function()
 	{
 		this.sprite.body.acceleration.x = -this.ACCELERATION;
+	}
+	
+	this.jump = function()
+	{
+		if(this.inAir != true)
+		{
+			this.sprite.body.velocity.y = this.JUMP_SPEED;
+			this.inAir = true;
+		}
+	}
+	
+	this.hitLand = function(player, layer)//accepts two arguments for compatibility with collide
+	{
+		if(this.inAir === true)// && this.sprite.body.velocity.y > 0)
+		{
+			this.inAir = false;
+		}
+		else{}//do nothing, let idle or others take care of it
 	}
 	
 	this.shoot = function(bulletgroup)

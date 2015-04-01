@@ -25,8 +25,8 @@ Secrets.Game = function (game) {
 };
 
 var layer, map, leftKey, rightKey, spaceKey, upKey, downKey, aKey, sKey, dKey, wKey;
-var player, baddies, orangeLB, orangeRB, yellowSB, bulletgroup, enemybullets;
-var LBflag, RBflag, timeMark, shootFlag;
+var player, baddies, bulletgroup;
+var timeMark, dirFlag;
 Secrets.Game.prototype = {
     create: function () {
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,11 +43,13 @@ Secrets.Game.prototype = {
 		this.game.physics.startSystem(Phaser.Physics.ARCADE);
 		map = this.game.add.tilemap('map');
 		map.addTilesetImage('greenBlock_32x32', 'greenBlock');
-		map.addTilesetImage('blueBlock_32x32', 'blueBlock');
+		map.addTilesetImage('blueBlock_32x32', 'pointTile');
 		layer = map.createLayer('Background');
-		layer = map.createLayer('Land');
+		layer = map.createLayer('Walls');
 		layer.resizeWorld();
-		map.setCollision(2, true, 'Land', true);
+		map.setCollision(1, true, 'Walls', true);
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+		this.game.physics.arcade.gravity.y = 300;//300;
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 		player = new newPlayer(this.game, this.game.rnd.integerInRange(0, 3168), 192);
 		this.game.camera.follow(player.sprite, this.game.camera.FOLLOW_PLATFORMER);
@@ -62,34 +64,11 @@ Secrets.Game.prototype = {
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 		bulletgroup = this.game.add.group();
 		bulletgroup.enableBody = true;
-		
-		enemybullets = this.game.add.group();
-		enemybullets.enableBody = true;
 	///////////////////////////////////////////////////////////////////////////////////////////////////	
-		yellowSB = this.game.add.sprite(this.game.camera.x+(this.game.camera.width/2)-16, 704, 'yellowBlock');//the camera's x postion, +center of the camera, shifted 16 left to center the square
-		orangeLB = this.game.add.sprite(yellowSB.x-38, 704, 'orangeBlock');//position of yellow, -spacing of 48
-		orangeRB = this.game.add.sprite(yellowSB.x+38, 704, 'orangeBlock');//position of yellow, +spacing of 48
-		
-		yellowSB.inputEnabled = true;
-		orangeLB.inputEnabled = true;
-		orangeRB.inputEnabled = true;
-		
-		yellowSB.events.onInputDown.add(playerShoot, this.game);
-		orangeLB.events.onInputDown.add(movePlayerLeft, this.game);
-		orangeRB.events.onInputDown.add(movePlayerRight, this.game);
-		//yellowSB.events.onInputUp.add(playerShoot, this.game);
-		orangeLB.events.onInputUp.add(movePlayerLeft, this.game);
-		orangeRB.events.onInputUp.add(movePlayerRight, this.game);
-		
-		LBflag = false;
-		RBflag = false;
-		
-		timeMark = this.game.time.now;
-		shootFlag = false;
     },
 
     update: function () {
-		this.game.physics.arcade.overlap(player.sprite, enemybullets, playerDie, null, this);
+		//this.game.physics.arcade.overlap(player.sprite, enemybullets, playerDie, null, this);
 		this.game.physics.arcade.overlap(bulletgroup, baddies, EnemyDie, null, this);
 		//this.game.physics.arcade.overlap(bulletgroup, enemybullets, bulletClash, null, this);
 		this.game.physics.arcade.overlap(bulletgroup, layer, bulletKill, null, this);
@@ -108,13 +87,13 @@ Secrets.Game.prototype = {
 		}
 		if(this.game.time.now-timeMark > 2000)
 		{
-			shootFlag = true;
+			dirFlag = true;
 		}
-		baddies.forEachAlive(EnemyUpdate, this, this);
+		baddies.forEachAlive(EnemyUpdate, this, this);//does update with dirFlag either true or false
 		if(shootFlag)
 		{
 			timeMark = this.game.time.now;
-			shootFlag = false;
+			dirFlag = false;
 		}
 		if(baddies.countLiving <= 0)
 		{
@@ -141,14 +120,16 @@ function newEnemy(game)
 {
 	var xcoord, ycoord;
 	
-	xcoord = game.rnd.integerInRange(16, 3184);
-	ycoord = 608
+	xcoord = game.rnd.integerInRange(64, 608);
+	ycoord = game.rnd.integerInRange(64, 608);
 	
 	var hume = new Enemy(game, xcoord, ycoord);
-	while(game.physics.arcade.collide(hume, baddies))//game.physics.arcade.collide(hume, layer) || 
+	game.physics.enable(hume, Phase.Physics.ARCADE);
+	hume.body.bouce = 1;
+	while(game.physics.arcade.overlap(hume, baddies))//game.physics.arcade.collide(hume, layer) || 
 	{
-		xcoord = game.rnd.integerInRange(0, 3168);//removed collision checks for player and layer from above for now
-		//ycoord = 608
+		xcoord = game.rnd.integerInRange(64, 608);//removed collision checks for player and layer from above for now
+		ycoord = game.rnd.integerInRange(64, 608);
 		hume.kill();
 		hume.reset(xcoord, ycoord);
 	}
@@ -158,7 +139,7 @@ function newEnemy(game)
 
 function Enemy(game, xcoord, ycoord)
 {
-	return game.add.sprite(xcoord, ycoord, 'redBlock');
+	return game.add.sprite(xcoord, ycoord, 'blueBlock');
 };
 
 function EnemyUpdate(enemysprite, game)
