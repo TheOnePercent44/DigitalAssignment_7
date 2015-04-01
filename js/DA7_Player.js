@@ -2,7 +2,7 @@ function newPlayer(game, xcoord, ycoord)
 {
 	this.game = game;
 	this.sprite = this.game.add.sprite(xcoord, ycoord, 'purpleBlock');
-	this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
+	/*this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 	this.MAX_SPEED = 500; // pixels/second
     this.ACCELERATION = 1500; // pixels/second/second
     this.DRAG = 500; // pixels/second
@@ -10,9 +10,9 @@ function newPlayer(game, xcoord, ycoord)
 	this.sprite.body.maxVelocity.setTo(this.MAX_SPEED, 0); // x, y
 	this.sprite.body.drag.setTo(this.DRAG, 0); // x, y
 	this.inAir = false;
-    this.JUMP_SPEED = -175; // pixels/second (negative y is up)
+    this.JUMP_SPEED = -175; // pixels/second (negative y is up)*/
 	
-	this.idle = function()
+	/*this.idle = function()
 	{
 		this.sprite.body.acceleration.x = 0;
 	}
@@ -25,9 +25,9 @@ function newPlayer(game, xcoord, ycoord)
 	this.moveLeft = function()
 	{
 		this.sprite.body.acceleration.x = -this.ACCELERATION;
-	}
+	}*/
 	
-	this.jump = function()
+	/*this.jump = function()
 	{
 		if(this.inAir != true)
 		{
@@ -45,6 +45,8 @@ function newPlayer(game, xcoord, ycoord)
 		else{}//do nothing, let idle or others take care of it
 	}
 	
+	//this.teleport = function(player*/
+	
 	this.shoot = function(bulletgroup)
 	{
 		var temp = this.game.add.sprite(this.sprite.x, this.sprite.y, 'purpleShot');
@@ -54,11 +56,11 @@ function newPlayer(game, xcoord, ycoord)
 		bulletgroup.add(temp);
 	}
 	
-	this.kill = function(playersprite, bulletsprite)
+	/*this.kill = function(playersprite, bulletsprite)
 	{
 		bulletsprite.kill();
 		this.sprite.kill();
-	}
+	}*/
 	
 	return this;
 };

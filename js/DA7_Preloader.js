@@ -1,4 +1,4 @@
-Secrets.Preloader = function (game) {
+Lottery.Preloader = function (game) {
 
 	this.background = null;
 	this.preloadBar = null;
@@ -8,7 +8,7 @@ Secrets.Preloader = function (game) {
 
 };
 
-Secrets.Preloader.prototype = {
+Lottery.Preloader.prototype = {
 
 	preload: function () {
 
